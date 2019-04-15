@@ -44,59 +44,48 @@ module.exports = {
       throw e
     }
   },
-  createEvent: args => {
+  createEvent: async args => {
     const event = new Event({
       title: args.eventInput.title,
       description: args.eventInput.description,
       price: +args.eventInput.price,
       date: new Date(args.eventInput.date),
-      creator: '5cb359ef9b3e2750baa94353'
+      creator: '5cb4c64013f4407ed6160e01'
     })
     let createdEvent
-    return event.save()
-      .then(result => {
-        createdEvent = {
-          ...result.toObject(),
-          date: new Date(event.date).toISOString(),
-          creator: user.bind(this, result.creator)
-        }
-        return User.findById('5cb359ef9b3e2750baa94353')
-      })
-      .then(user => {
-        if (!user) {
-          throw new Error('User doesn\'t exists.')
-        }
-        user.createdEvents.push(event)
-        return user.save()
-      })
-      .then(result => {
-        return createdEvent
-      })
-      .catch(err => {
-        console.log(err)
-        throw err
-      })
+    try {
+      const result = await event.save()
+      createdEvent = {
+        ...result.toObject(),
+        date: new Date(event.date).toISOString(),
+        creator: user.bind(this, result.creator)
+      }
+      const creator = await User.findById('5cb4c64013f4407ed6160e01')
+      if (!creator) {
+        throw new Error('User doesn\'t exists.')
+      }
+      creator.createdEvents.push(event)
+      await creator.save()
+      return createdEvent
+    } catch (e) {
+      throw e
+    }
   },
-  createUser: args => {
-    return User.findOne({ email: args.userInput.email })
-      .then(user => {
-        if (user) {
-          throw new Error('User exists already.')
-        }
-        return bcrypt.hash(args.userInput.password, 12)
+  createUser: async args => {
+    try {
+      const result = await User.findOne({ email: args.userInput.email })
+      if (result) {
+        throw new Error('User exists already.')
+      }
+      const hashedPassword = await bcrypt.hash(args.userInput.password, 12)
+      const user = new User({
+        email: args.userInput.email,
+        password: hashedPassword
       })
-      .then(hashedPassword => {
-        const user = new User({
-          email: args.userInput.email,
-          password: hashedPassword
-        })
-        return user.save()
-      })
-      .then(user => {
-        return { ...user._doc, password: null }
-      })
-      .catch(err => {
-        throw err
-      })
+      const savedUser = await user.save()
+      return { ...savedUser.toObject(), password: null }
+    } catch (e) {
+      throw e
+    }
   }
 }
