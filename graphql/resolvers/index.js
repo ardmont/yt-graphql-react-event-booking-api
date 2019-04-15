@@ -2,9 +2,37 @@ const bcrypt = require('bcryptjs')
 const Event = require('../../models/event')
 const User = require('../../models/user')
 
-const events = eventIds => {
-  return Event.find({ _id: { $in: eventIds } })
-    .then(events => {
+const events = async eventIds => {
+  try {
+    const events = await Event.find({ _id: { $in: eventIds } })
+    return events.map(event => {
+      return {
+        ...event.toObject(),
+        date: new Date(event.date).toISOString(),
+        creator: user.bind(this, event.creator)
+      }
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+const user = async userId => {
+  try {
+    const user = await User.findById(userId)
+    return {
+      ...user.toObject(),
+      createdEvents: events.bind(this, user.createdEvents)
+    }
+  } catch (e) {
+    throw e
+  }
+}
+
+module.exports = {
+  events: async () => {
+    try {
+      const events = await Event.find()
       return events.map(event => {
         return {
           ...event.toObject(),
@@ -12,40 +40,9 @@ const events = eventIds => {
           creator: user.bind(this, event.creator)
         }
       })
-    })
-    .catch(err => {
-      throw err
-    })
-}
-
-const user = userId => {
-  return User.findById(userId)
-    .then(user => {
-      return {
-        ...user.toObject(),
-        createdEvents: events.bind(this, user.createdEvents)
-      }
-    })
-    .catch(err => {
-      throw err
-    })
-}
-
-module.exports = {
-  events: () => {
-    return Event.find()
-      .then(events => {
-        return events.map(event => {
-          return {
-            ...event.toObject(),
-            date: new Date(event.date).toISOString(),
-            creator: user.bind(this, event.creator)
-          }
-        })
-      })
-      .catch(err => {
-        throw err
-      })
+    } catch (e) {
+      throw e
+    }
   },
   createEvent: args => {
     const event = new Event({
