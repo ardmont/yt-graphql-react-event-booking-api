@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const Event = require('../../models/event')
 const User = require('../../models/user')
+var _ = require('lodash')
 
 const events = async eventIds => {
   try {
@@ -83,7 +84,7 @@ module.exports = {
         password: hashedPassword
       })
       const savedUser = await user.save()
-      return { ...savedUser.toObject(), password: null }
+      return _.omit(savedUser.toObject(), ['password'])
     } catch (e) {
       throw e
     }
