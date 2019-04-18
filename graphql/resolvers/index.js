@@ -123,6 +123,23 @@ module.exports = {
       throw e
     }
   },
+  cancelBooking: async args => {
+    try {
+      const booking = await Booking.findById(args.bookingId).populate('event')
+      if (!booking) {
+        throw new Error('Booking doesn\'t exists.')
+      }
+      const event = booking.event.toObject()
+      await booking.remove()
+      return {
+        ...event,
+        creator: user.bind(this, booking.event.creator),
+        date: new Date(event.date).toISOString()
+      }
+    } catch (e) {
+      throw e
+    }
+  },
   createUser: async args => {
     try {
       const result = await User.findOne({ email: args.userInput.email })
