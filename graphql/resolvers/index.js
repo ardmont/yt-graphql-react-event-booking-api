@@ -4,15 +4,19 @@ const Event = require('../../models/event')
 const User = require('../../models/user')
 const Booking = require('../../models/booking')
 
+const transformEvent = event => {
+  return {
+    ...event.toObject(),
+    date: new Date(event.date).toISOString(),
+    creator: user.bind(this, event.creator)
+  }
+}
+
 const events = async eventIds => {
   try {
     const events = await Event.find({ _id: { $in: eventIds } })
     return events.map(event => {
-      return {
-        ...event.toObject(),
-        date: new Date(event.date).toISOString(),
-        creator: user.bind(this, event.creator)
-      }
+      return transformEvent(event)
     })
   } catch (e) {
     throw e
@@ -22,10 +26,7 @@ const events = async eventIds => {
 const singleEvent = async eventId => {
   try {
     const event = await Event.findById(eventId)
-    return {
-      ...event.toObject(),
-      creator: user.bind(this, event.creator)
-    }
+    return transformEvent(event)
   } catch (e) {
     throw e
   }
@@ -48,11 +49,7 @@ module.exports = {
     try {
       const events = await Event.find()
       return events.map(event => {
-        return {
-          ...event.toObject(),
-          date: new Date(event.date).toISOString(),
-          creator: user.bind(this, event.creator)
-        }
+        return transformEvent(event)
       })
     } catch (e) {
       throw e
@@ -85,11 +82,7 @@ module.exports = {
     let createdEvent
     try {
       const result = await event.save()
-      createdEvent = {
-        ...result.toObject(),
-        date: new Date(event.date).toISOString(),
-        creator: user.bind(this, result.creator)
-      }
+      createdEvent = transformEvent(result)
       const creator = await User.findById('5cb359ef9b3e2750baa94353')
       if (!creator) {
         throw new Error('User doesn\'t exists.')
@@ -129,13 +122,9 @@ module.exports = {
       if (!booking) {
         throw new Error('Booking doesn\'t exists.')
       }
-      const event = booking.event.toObject()
+      const event = transformEvent(booking.event)
       await booking.remove()
-      return {
-        ...event,
-        creator: user.bind(this, booking.event.creator),
-        date: new Date(event.date).toISOString()
-      }
+      return event
     } catch (e) {
       throw e
     }
