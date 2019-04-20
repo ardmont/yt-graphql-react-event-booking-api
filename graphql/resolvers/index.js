@@ -1,5 +1,8 @@
 const bcrypt = require('bcryptjs')
 const _ = require('lodash')
+
+const { dateToString } = require('../../helpers/date.js')
+
 const Event = require('../../models/event')
 const User = require('../../models/user')
 const Booking = require('../../models/booking')
@@ -7,8 +10,18 @@ const Booking = require('../../models/booking')
 const transformEvent = event => {
   return {
     ...event.toObject(),
-    date: new Date(event.date).toISOString(),
+    date: dateToString(event.date),
     creator: user.bind(this, event.creator)
+  }
+}
+
+const transformBooking = booking => {
+  return {
+    ...booking.toObject(),
+    event: singleEvent.bind(this, booking.event),
+    user: user.bind(this, booking.user),
+    createdAt: dateToString(booking.createdAt),
+    updatedAt: dateToString(booking.updatedAt)
   }
 }
 
@@ -59,13 +72,7 @@ module.exports = {
     try {
       const bookings = await Booking.find()
       return bookings.map(booking => {
-        return {
-          ...booking.toObject(),
-          event: singleEvent.bind(this, booking.event),
-          user: user.bind(this, booking.user),
-          createdAt: new Date(booking.createdAt).toISOString(),
-          updatedAt: new Date(booking.createdAt).toISOString()
-        }
+        return transformBooking(booking)
       })
     } catch (e) {
       throw e
@@ -76,7 +83,7 @@ module.exports = {
       title: args.eventInput.title,
       description: args.eventInput.description,
       price: +args.eventInput.price,
-      date: new Date(args.eventInput.date),
+      date: dateToString(args.eventInput.date),
       creator: '5cb359ef9b3e2750baa94353'
     })
     let createdEvent
@@ -104,14 +111,8 @@ module.exports = {
         event: event,
         user: '5cb359ef9b3e2750baa94353'
       })
-      await booking.save()
-      return {
-        ...booking.toObject(),
-        event: singleEvent.bind(this, booking.event),
-        user: user.bind(this, booking.user),
-        createdAt: new Date(booking.createdAt).toISOString(),
-        updatedAt: new Date(booking.createdAt).toISOString()
-      }
+      const result = await booking.save()
+      return transformBooking(result)
     } catch (e) {
       throw e
     }
