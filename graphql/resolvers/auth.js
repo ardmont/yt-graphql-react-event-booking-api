@@ -22,27 +22,27 @@ module.exports = {
       throw e
     }
   },
-  login: async args => {
+  login: async ({ email, password }) => {
     try {
-      const user = await User.findOne({ email: args.email })
+      const user = await User.findOne({ email: email })
       if (!user) {
         throw new Error('User doens\'t exists.')
       }
-      const passCheck = await bcrypt.compare(args.password, user.password)
-      if (passCheck) {
-        const tokenExpiration = Math.floor(Date.now() / 1000) + (60 * 60)
-
+      const passCheck = await bcrypt.compare(password, user.password)
+      if (!passCheck) {
+        throw new Error('Invalid password')
+      } else {
         const token = jwt.sign({
-          exp: tokenExpiration,
+          userId: user.id,
           userEmail: user.email },
-        'secret')
+        'secret', {
+          expiresIn: '1h'
+        })
 
         return {
-          userId: user._id,
+          userId: user.id,
           token: token,
-          tokenExpiration: tokenExpiration }
-      } else {
-        throw new Error('Invalid password')
+          tokenExpiration: 1 }
       }
     } catch (e) {
       throw e
