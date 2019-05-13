@@ -1,12 +1,18 @@
-import React from 'react';
-import './App.css';
+import React, { Component } from 'react'
+import { BrowserRouter, Route, Link } from 'react-router-dom'
 
-function App() {
+import './App.css'
+
+function App () {
   return (
-    <div className="App">
-      <h1>It Works!</h1>
-    </div>
-  );
+    <BrowserRouter>
+      <h1>TESTE</h1>
+      <Route path='/' exact component={null} />
+      <Route path='/auth' exact component={null} />
+      <Route path='/events' exact component={null} />
+      <Route path='/bookings' exact component={null} />
+    </BrowserRouter>
+  )
 }
 
-export default App;
+export default App
