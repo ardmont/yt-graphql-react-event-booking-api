@@ -11,7 +11,7 @@ function App () {
   return (
     <BrowserRouter>
       <MainNavigation />
-      <main>
+      <main className='main-content'>
         <Switch>
           <Redirect from='/' to='/auth' exact />
           <Route path='/auth' component={AuthPage} />
