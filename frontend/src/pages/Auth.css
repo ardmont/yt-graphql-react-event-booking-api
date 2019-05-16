@@ -1,0 +1,18 @@
+.auth-form {
+  width: 25rem;
+  max-width: 80%;
+  margin: 5rem auto;
+}
+
+.form-control {
+  margin-bottom: 1rem;
+}
+.form-control label {
+  margin-bottom: 0.5rem;
+}
+.form-control label, .form-control input {
+  width: 100%;
+  display: block;
+}
+
+/*# sourceMappingURL=Auth.css.map */
