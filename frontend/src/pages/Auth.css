@@ -15,4 +15,20 @@
   display: block;
 }
 
+.form-actions button {
+  background: #0d9fcc;
+  font: inherit;
+  border: 1px solid #0d9fcc;
+  border-radius: 3px;
+  padding: 0.25rem 1rem;
+  margin-right: 1rem;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.26);
+  color: white;
+  cursor: pointer;
+}
+.form-actions button:hover, .form-actions button:active {
+  background: #04789c;
+  border-color: #04789c;
+}
+
 /*# sourceMappingURL=Auth.css.map */
