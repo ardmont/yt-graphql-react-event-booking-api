@@ -2,8 +2,11 @@ import React, { Component } from 'react'
 import Message from '../components/Alert/Message'
 
 import './Auth.css'
+import AuthContext from '../context/auth-context'
 
 class AuthPage extends Component {
+  static contextType = AuthContext
+
   constructor (props) {
     super(props)
     this.emailEl = React.createRef()
@@ -81,10 +84,16 @@ class AuthPage extends Component {
         } else {
           this.setState({
             showMessage: true,
-            message: 'User created successifuly!',
+            message: 'Success!',
             userCreated: true
           })
           setTimeout(() => this.setState({ showMessage: false }), 3000)
+        }
+        if (response.data.login.token) {
+          this.context.login(
+            response.data.login.token,
+            response.data.login.userId,
+            response.data.login.tokenExpiration)
         }
         console.log('data returned:', response)
       })
