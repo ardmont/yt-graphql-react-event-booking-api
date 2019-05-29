@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Message from '../components/Alert/Message'
 
-import './Auth.css'
+import './Auth.sass'
 import AuthContext from '../context/auth-context'
 
 class AuthPage extends Component {

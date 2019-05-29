@@ -1,6 +1,6 @@
 import React from 'react'
 
-import './Modal.css'
+import './Modal.sass'
 
 const modal = props => (
   <div className='modal'>

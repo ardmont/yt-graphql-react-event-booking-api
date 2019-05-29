@@ -1,6 +1,6 @@
 import React from 'react'
 
-import './Message.css'
+import './Message.sass'
 
 const message = (props) => {
   const type = props.success ? 'success' : 'failure'

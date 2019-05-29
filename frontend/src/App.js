@@ -7,7 +7,7 @@ import EventsPage from './pages/Events'
 import MainNavigation from './components/Navigation/MainNavigation'
 import AuthContext from './context/auth-context'
 
-import './App.css'
+import './App.sass'
 
 class App extends Component {
   state = {
