@@ -8,7 +8,9 @@ import AuthContext from '../context/auth-context'
 
 class EventsPage extends Component {
   state = {
-    creating: false
+    isLoading: false,
+    creating: false,
+    events: []
   }
 
   static contextType = AuthContext
@@ -19,6 +21,10 @@ class EventsPage extends Component {
     this.priceElRef = React.createRef()
     this.dateElRef = React.createRef()
     this.descriptionElRef = React.createRef()
+  }
+
+  componentDidMount () {
+    this.fetchEvents()
   }
 
   startCreateEventHandler = () => {
@@ -83,6 +89,10 @@ class EventsPage extends Component {
         return response.json()
       })
       .then((response) => {
+        this.setState({
+          creating: false
+        })
+        this.fetchEvents()
         console.log('data returned:', response)
       })
       .catch(e => console.log(e))
@@ -94,7 +104,58 @@ class EventsPage extends Component {
     })
   }
 
+  fetchEvents () {
+    this.setState({
+      isLoading: true
+    })
+
+    const requestBody = {
+      query: `
+        query{
+          events{
+            _id
+            title
+            description
+            price
+            date
+            creator{
+              _id
+              email
+            }
+          }
+        }
+      `
+    }
+
+    window.fetch('http://localhost:3000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ query: requestBody.query })
+    })
+      .then((response) => {
+        if (response.status !== 200 && response.status !== 201) {
+          throw new Error('Failed')
+        }
+        return response.json()
+      })
+      .then((response) => {
+        const events = response.data.events
+        this.setState({
+          events: events,
+          isLoading: false
+        })
+      })
+      .catch(e => console.log(e))
+  }
+
   render () {
+    const eventList = this.state.events.map(event => {
+      return <li key={event._id} className='events__list-item'>{event.title}</li>
+    })
+
     return (
       <React.Fragment>
         {this.state.creating && <Backdrop />}
@@ -123,12 +184,16 @@ class EventsPage extends Component {
             </div>
           </form>
         </Modal>}
-        {this.context.token && 
+        {this.context.token &&
           <div className='events-control'>
             <p>Share your own Events!</p>
             <button className='btn' onClick={this.startCreateEventHandler}>Create Event</button>
           </div>
         }
+        {this.state.isLoading && <div>Loading...</div>}
+        <ul className='events__list'>
+          {eventList}
+        </ul>
       </React.Fragment>
     )
   }
