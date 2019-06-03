@@ -8,17 +8,17 @@ module.exports = {
   events: async () => {
     try {
       const events = await Event.find()
-      const mapedEvents = await events.map(event => {
+      /* const mapedEvents = await events.map(event => {
         return transformEvent(event)
       })
       return new Promise(resolve => {
         setTimeout(() => {
           resolve(mapedEvents)
         }, 1000)
-      })
-      /* return events.map(event => {
-        return transformEvent(event)
       }) */
+      return events.map(event => {
+        return transformEvent(event)
+      })
     } catch (e) {
       throw e
     }
