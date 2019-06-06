@@ -57,21 +57,22 @@ class EventsPage extends Component {
 
     const requestBody = {
       query: `
-        mutation{
-          createEvent(eventInput: {
-            title: "${title}"
-            price: ${price}
-            date: "${date}"
-            description: "${description}"
-          }){
-            _id
-            title
-            description
-            price
-            date
+          mutation CreateEvent($title: String!, $desc: String!, $price: Float!, $date: String!) {
+            createEvent(eventInput: {title: $title, description: $desc, price: $price, date: $date}) {
+              _id
+              title
+              description
+              date
+              price
+            }
           }
-        }
-      `
+        `,
+      variables: {
+        title: title,
+        desc: description,
+        price: price,
+        date: date
+      }
     }
 
     const token = this.context.token
@@ -84,7 +85,7 @@ class EventsPage extends Component {
         'Accept': 'application/json',
         'Authorization': 'Bearer ' + token
       },
-      body: JSON.stringify({ query: requestBody.query })
+      body: JSON.stringify(requestBody)
     })
       .then((response) => {
         if (response.status !== 200 && response.status !== 201) {
