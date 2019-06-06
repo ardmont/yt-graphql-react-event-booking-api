@@ -195,13 +195,16 @@ class EventsPage extends Component {
 
     const requestBody = {
       query: `
-        mutation { 
-          bookEvent(eventId: "${this.state.selectedEvent._id}") { 
+        mutation BookEvent($eventId: ID!){ 
+          bookEvent(eventId: $eventId) { 
             _id
             createdAt
             updatedAt
           } 
-        }`
+        }`,
+      variables: {
+        eventId: this.state.selectedEvent._id
+      }
     }
 
     const token = this.context.token
@@ -212,7 +215,7 @@ class EventsPage extends Component {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       },
-      body: JSON.stringify({ query: requestBody.query })
+      body: JSON.stringify(requestBody)
     })
       .then((response) => {
         if (response.status !== 200 && response.status !== 201) {
