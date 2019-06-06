@@ -1,0 +1,22 @@
+@import '../../../variables'
+
+.bookings-control
+  text-align: center
+  padding: 0.5rem
+
+  button
+    font: inherit
+    border: none
+    background: transparent
+    color: black
+    padding: 0.25rem 3rem
+    border-bottom: 2px solid transparent
+    cursor: pointer
+
+    &.active
+      border-bottom-color: $theme-color
+      color: $theme-color
+
+    &:focus
+      outline: none
+      -moz-outline-style: none
