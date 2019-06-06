@@ -38,26 +38,36 @@ class AuthPage extends Component {
       return
     }
 
-    let query
+    let requestBody = {
+      query: `
+        query Login($email: String!, $password: String!) {
+          login(email: $email, password: $password){
+            userId
+            token
+            tokenExpiration
+          }
+        }`,
+      variables: {
+        email: email,
+        password: password
+      }
+    }
 
-    if (this.state.isLogin) {
-      query = `
-      query{
-        login(email:"${email}", password:"${password}"){
-          userId
-          token
-          tokenExpiration
+    if (!this.state.isLogin) {
+      requestBody = {
+        query: `
+          mutation CreateUser($email: String!, $password: String!) {
+            createUser(userInput: {email: $email, password: $password}) {
+              _id
+              email
+            }
+          }
+        `,
+        variables: {
+          email: email,
+          password: password
         }
-      }`
-    } else {
-      query = `
-      mutation { 
-        createUser(userInput:{
-          email:"${email}", 
-          password:"${password}"
-        })
-        { email } 
-      }`
+      }
     }
 
     window.fetch('http://localhost:3000/graphql', {
@@ -66,7 +76,7 @@ class AuthPage extends Component {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({ query: query })
+      body: JSON.stringify(requestBody)
     })
       .then((response) => {
         if (response.status !== 200 && response.status !== 201) {
