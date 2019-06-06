@@ -79,8 +79,16 @@ class BookingsPage extends Component {
 
     const requestBody = {
       query: `
-        mutation { cancelBooking(bookingId: "${bookingId}") { title } }
-      `
+        mutation CancelBooking($id: ID!) { 
+          cancelBooking(bookingId: $id) { 
+            _id
+            title 
+          } 
+        }
+      `,
+      variables: {
+        id: bookingId
+      }
     }
 
     window.fetch('http://localhost:3000/graphql', {
@@ -89,7 +97,7 @@ class BookingsPage extends Component {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + this.context.token
       },
-      body: JSON.stringify({ query: requestBody.query })
+      body: JSON.stringify(requestBody)
     })
       .then((response) => {
         if (response.status !== 200 && response.status !== 201) {
